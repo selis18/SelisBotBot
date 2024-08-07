@@ -5,26 +5,19 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	"github.com/joho/godotenv"
 	"github.com/selis18/agents"
 	"github.com/selis18/sprays"
 )
 
 func main() {
 	//load .env
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
-	}
-	environmentPath := filepath.Join(dir, ".env")
-	err = godotenv.Load(environmentPath)
-	if err != nil {
-		log.Fatalf("Error loading .env")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatalf("Error loading .env")
+	// }
 
 	token := os.Getenv("TOKEN")
 	b, err := bot.New(token)
