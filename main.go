@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -14,9 +15,13 @@ import (
 )
 
 func main() {
-	agents.GetAgents()
 	//load .env
-	err := godotenv.Load()
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	environmentPath := filepath.Join(dir, ".env")
+	err = godotenv.Load(environmentPath)
 	if err != nil {
 		log.Fatalf("Error loading .env")
 	}
