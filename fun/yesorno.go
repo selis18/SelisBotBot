@@ -29,7 +29,7 @@ func YesOrNo() string {
 func HandlerYesOrNo(ctx context.Context, b *bot.Bot, update *models.Update) {
 	params := &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
-		Text:      "Мой ответ: " + YesOrNo(),
+		Text:      YesOrNo(),
 		ParseMode: models.ParseModeMarkdown,
 	}
 
