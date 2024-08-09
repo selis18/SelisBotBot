@@ -28,6 +28,7 @@ func main() {
 	var sprayResponse *apis.SprayResponse
 	var collectionResponse *apis.CollectionResponse
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/randa", bot.MatchTypeContains, agentResponse.Handler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/randt", bot.MatchTypeContains, agentResponse.TeamHandler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/rands", bot.MatchTypeContains, sprayResponse.Handler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/randc", bot.MatchTypeContains, collectionResponse.Handler)
 
