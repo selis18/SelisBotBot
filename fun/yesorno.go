@@ -4,21 +4,26 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"time"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 )
 
+var variants = []string{
+	"Сомневаюсь в этом",
+	"Скорее всего, да",
+	"Не исключено",
+	"Да, но с оговорками",
+	"Нет, но есть исключения",
+	"Попробуйте поверить в это",
+	"Да, и это замечательно",
+	"Нет, это не в наших планах",
+	"Нет, и это требует дальнейшего изучения",
+	"Да, безусловно!",
+}
+
 func YesOrNo() string {
-	rand.Seed(time.Now().UnixNano())
-	var str string
-	if rand.Intn(2) == 0 {
-		str = "Да"
-	} else {
-		str = "Нет"
-	}
-	return str
+	return variants[rand.Intn(len(variants))]
 }
 
 func HandlerYesOrNo(ctx context.Context, b *bot.Bot, update *models.Update) {
