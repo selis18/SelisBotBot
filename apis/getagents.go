@@ -112,6 +112,6 @@ func (ar *AgentResponse) TeamHandler(ctx context.Context, b *bot.Bot, update *mo
 
 	_, err = b.SendMessage(ctx, params)
 	if err != nil {
-		log.Fatalf("Error sending photo: %v", err)
+		fmt.Print(err)
 	}
 }

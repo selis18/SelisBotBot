@@ -9,6 +9,7 @@ import (
 	"github.com/go-telegram/bot"
 	"github.com/joho/godotenv"
 	"github.com/selis18/apis"
+	"github.com/selis18/fun"
 )
 
 func main() {
@@ -31,6 +32,7 @@ func main() {
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/randt", bot.MatchTypeContains, agentResponse.TeamHandler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/rands", bot.MatchTypeContains, sprayResponse.Handler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/randc", bot.MatchTypeContains, collectionResponse.Handler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/yn", bot.MatchTypeContains, fun.HandlerYesOrNo)
 
 	fmt.Println("Bot started")
 	b.Start(context.Background())
