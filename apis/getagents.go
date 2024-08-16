@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 	"strings"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	"github.com/selis18/errs"
 )
 
 type AgentResponse struct {
@@ -69,9 +69,7 @@ func (ar *AgentResponse) GetTeamAgents(agents AgentResponse) string {
 func (ar *AgentResponse) Handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	arrAgents, err := ar.GetAllEntity()
-	if err != nil {
-		fmt.Println(err)
-	}
+	errs.CheckErr("Can't get all agents", err)
 
 	randAgent := ar.GetRandomEntity(arrAgents)
 	str := ""
@@ -92,17 +90,13 @@ func (ar *AgentResponse) Handler(ctx context.Context, b *bot.Bot, update *models
 
 	// Отправка сообщения с изображением
 	_, err = b.SendPhoto(ctx, params)
-	if err != nil {
-		log.Fatalf("Error sending photo: %v", err)
-	}
+	errs.CheckErr("Can't send photo", err)
 }
 
 func (ar *AgentResponse) TeamHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	arrAgents, err := ar.GetAllEntity()
-	if err != nil {
-		fmt.Println(err)
-	}
+	errs.CheckErr("Can't get all agents", err)
 
 	params := &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
@@ -111,7 +105,5 @@ func (ar *AgentResponse) TeamHandler(ctx context.Context, b *bot.Bot, update *mo
 	}
 
 	_, err = b.SendMessage(ctx, params)
-	if err != nil {
-		fmt.Print(err)
-	}
+	errs.CheckErr("Can't send message", err)
 }

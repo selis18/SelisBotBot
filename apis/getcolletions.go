@@ -3,14 +3,13 @@ package apis
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	"github.com/selis18/errs"
 )
 
 type CollectionResponse struct {
@@ -52,12 +51,10 @@ func (cl *CollectionResponse) GetRandomEntity(collections CollectionResponse) Co
 }
 
 func (cl *CollectionResponse) Handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	arrSprays, err := cl.GetAllEntity()
-	if err != nil {
-		fmt.Println(err)
-	}
+	arrCollection, err := cl.GetAllEntity()
+	errs.CheckErr("Can't get all collections", err)
 
-	randSpray := cl.GetRandomEntity(arrSprays)
+	randSpray := cl.GetRandomEntity(arrCollection)
 
 	photo := randSpray.Icon
 
@@ -71,7 +68,5 @@ func (cl *CollectionResponse) Handler(ctx context.Context, b *bot.Bot, update *m
 
 	// Отправка сообщения с изображением
 	_, err = b.SendPhoto(ctx, params)
-	if err != nil {
-		log.Fatalf("Error sending photo: %v", err)
-	}
+	errs.CheckErr("Can't send photo", err)
 }
