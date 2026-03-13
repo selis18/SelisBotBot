@@ -3,70 +3,65 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"strings"
 
 	"github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
 	"github.com/joho/godotenv"
-	"github.com/selis18/apis"
-
-	"github.com/selis18/errs"
-	"github.com/selis18/fun"
 )
 
-type Users struct {
-	Users []User
-}
-
-type User struct {
-	Id    string `json:"id"`
-	Login string `json:"login"`
-	Num   string `json:"num"`
-}
-
 func main() {
-	// //load .env
 	err := godotenv.Load()
-	if err != nil {
-		fmt.Println(err)
-	}
-	token := os.Getenv("TOKEN")
-	b, err := bot.New(token)
-	errs.CheckErr("Bot blocked", err)
+	telegramToken := os.Getenv("TG_TOKEN")
 
-	var agentResponse *apis.AgentResponse
-	var sprayResponse *apis.SprayResponse
-	var collectionResponse *apis.CollectionResponse
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/randa", bot.MatchTypeContains, agentResponse.Handler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/randt", bot.MatchTypeContains, agentResponse.TeamHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/rands", bot.MatchTypeContains, sprayResponse.Handler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/randc", bot.MatchTypeContains, collectionResponse.Handler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/yn", bot.MatchTypeContains, fun.HandlerRandomAnswer)
+	amveraClient := NewAmveraClient()
+
+	b, err := bot.New(telegramToken)
+	if err != nil {
+		log.Fatal("Bot creation failed:", err)
+	}
+
+	b.RegisterHandler(bot.HandlerTypeMessageText, "", bot.MatchTypePrefix, func(ctx context.Context, b *bot.Bot, update *models.Update) {
+		// Игнорируем команды
+		if strings.HasPrefix(update.Message.Text, "/") {
+			return
+		}
+
+		text := update.Message.Text
+		if !strings.Contains(strings.ToLower(text), "чел") {
+			return
+		}
+
+		// Показываем "печатает..."
+		b.SendChatAction(ctx, &bot.SendChatActionParams{
+			ChatID: update.Message.Chat.ID,
+			Action: models.ChatActionTyping,
+		})
+
+		reply, err := amveraClient.Ask(update.Message.Text)
+		if err != nil {
+			log.Printf("Amvera API error: %v", err)
+			b.SendMessage(ctx, &bot.SendMessageParams{
+				ChatID: update.Message.Chat.ID,
+				Text:   "Ошибка при обращении к модели. Попробуйте позже.",
+				ReplyParameters: &models.ReplyParameters{
+					MessageID: update.Message.ID,
+				},
+			})
+			return
+		}
+
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   reply,
+			ReplyParameters: &models.ReplyParameters{
+				MessageID: update.Message.ID,
+			},
+		})
+	})
 
 	fmt.Println("Bot started")
 	b.Start(context.Background())
-
-	// // //user := update.Message.Chat.ID
-	// paramss := &bot.ForwardMessageParams{
-	// 	ChatID:     495361324,
-	// 	MessageID:  347,
-	// 	FromChatID: "495361324",
-	// }
-
-	// id, err := b.ForwardMessage(context.Background(), paramss)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(id.Text) //1723443037
-
-	// var user User
-	// var str = []byte(`{"id": "1", "login": "selis18", "num": "1"}`)
-
-	// err = json.Unmarshal(str, &user)
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// fmt.Println(user.Id)
-
 }
